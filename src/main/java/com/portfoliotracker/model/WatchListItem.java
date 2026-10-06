@@ -6,7 +6,7 @@ public class WatchListItem {
 
     private int watchListItemId;
     private int userId;
-    private Stock stock;
+    private int stockId;
     private LocalDateTime addedAt;
 
     public int getWatchListItemId() {
@@ -25,12 +25,12 @@ public class WatchListItem {
         this.userId = userId;
     }
 
-    public Stock getStock() {
-        return stock;
+    public int getStock() {
+        return stockId;
     }
 
-    public void setStock(Stock stock) {
-        this.stock = stock;
+    public void setStock(int stockId) {
+        this.stockId = stockId;
     }
 
     public LocalDateTime getAddedAt() {

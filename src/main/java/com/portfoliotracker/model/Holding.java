@@ -6,7 +6,7 @@ public class Holding {
 
     private int holdingId;
     private int userId;
-    private Stock stock;
+    private int stockId;
     private BigDecimal quantity;
     private BigDecimal averagePurchasePrice;
 
@@ -26,12 +26,12 @@ public class Holding {
         this.userId = userId;
     }
 
-    public Stock getStock() {
-        return stock;
+    public int getStockId() {
+        return stockId;
     }
 
-    public void setStock(Stock stock) {
-        this.stock = stock;
+    public void setStockId(int stockId) {
+        this.stockId = stockId;
     }
 
     public BigDecimal getQuantity() {
