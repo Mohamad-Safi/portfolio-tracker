@@ -33,7 +33,7 @@ public class Transaction {
         return stockId;
     }
 
-    public void setStock(int stock) {
+    public void setStock(int stockId) {
         this.stockId = stockId;
     }
 

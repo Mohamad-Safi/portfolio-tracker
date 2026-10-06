@@ -1,4 +1,4 @@
-package com.portfoliotracker.dto;
+package com.portfoliotracker.dao.db;
 
 import com.portfoliotracker.model.Holding;
 
