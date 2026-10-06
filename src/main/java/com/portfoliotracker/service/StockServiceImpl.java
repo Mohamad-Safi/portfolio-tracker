@@ -1,10 +1,12 @@
 package com.portfoliotracker.service;
 
 import com.portfoliotracker.dao.StockDao;
+import com.portfoliotracker.exception.StockNotFoundException;
 import com.portfoliotracker.model.Stock;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -21,9 +23,13 @@ public class StockServiceImpl implements StockService{
     }
 
     @Override
-    public Stock getStockById(int id) {
+    public Stock getStockById(int stockId) {
 
-        throw  new UnsupportedOperationException("///");
+        Optional<Stock> result = stockDao.getStockById(stockId);
+        if (result.isEmpty()){
+            throw new StockNotFoundException("No stock found with id : "+ stockId);
+        }
+        return result.get();
     }
 
     @Override

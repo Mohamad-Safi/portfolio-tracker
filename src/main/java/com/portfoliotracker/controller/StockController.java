@@ -4,6 +4,7 @@ package com.portfoliotracker.controller;
 import com.portfoliotracker.model.Stock;
 import com.portfoliotracker.service.StockService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,5 +23,10 @@ public class StockController {
     @GetMapping
     public List<Stock> getAllStocks(){
         return stockService.getAllStocks();
+    }
+
+    @GetMapping("/{stockId}")
+    public Stock getStockById(@PathVariable int stockId){
+        return stockService.getStockById(stockId);
     }
 }
