@@ -7,7 +7,7 @@ public class Transaction {
 
     private int transactionId;
     private int userId;
-    private Stock stock;
+    private int stockId;
     private TransactionType transactionType;
     private BigDecimal quantity;
     private BigDecimal price;
@@ -29,12 +29,12 @@ public class Transaction {
         this.userId = userId;
     }
 
-    public Stock getStock() {
-        return stock;
+    public int getStockId() {
+        return stockId;
     }
 
-    public void setStock(Stock stock) {
-        this.stock = stock;
+    public void setStock(int stock) {
+        this.stockId = stockId;
     }
 
     public TransactionType getTransactionType() {
