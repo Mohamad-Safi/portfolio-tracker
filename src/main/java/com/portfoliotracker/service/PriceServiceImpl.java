@@ -11,20 +11,31 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class PriceServiceImpl implements PriceService{
 
     //bean for restclient already created in appconfig and handed in here in the constructor
-
+    private final long cacheMinutes;
     private final RestClient restClient;
     private final String apiKey;
 
-    public PriceServiceImpl(RestClient restClient, @Value("${twelvedata.api-key}") String apiKey){
+    //ticker and its cached price
+    private final Map<String, CachedPrice> cache = new ConcurrentHashMap<>();
+
+    private record CachedPrice(BigDecimal price, LocalDateTime fetchedAt){}
+
+    public PriceServiceImpl(RestClient restClient, @Value("${twelvedata.api-key}") String apiKey,
+                            @Value("${pricing.cache-minutes}") long cacheMinutes){
         this.restClient = restClient;
         this.apiKey = apiKey;
+        this.cacheMinutes = cacheMinutes;
     }
+
 
     //ask twelve for quote and return its json as a java object.
     private TwelveDataQuoteResponse fetchQuote(String tickerSymbol) {
