@@ -13,8 +13,10 @@ import java.util.Optional;
 public class StockServiceImpl implements StockService{
 
     private final StockDao stockDao;
-    public StockServiceImpl(StockDao stockDao){
+    private final PriceService priceService;
+    public StockServiceImpl(StockDao stockDao, PriceService priceService){
         this.stockDao = stockDao;
+        this.priceService = priceService;
     }
 
     @Override
@@ -34,7 +36,17 @@ public class StockServiceImpl implements StockService{
 
     @Override
     public Stock findOrCreateStock(String tickerSymbol) {
+        String ticker = tickerSymbol.trim().toUpperCase();
+        Optional<Stock> existingStock = stockDao.getStockByTicker(ticker);
+        if (existingStock.isPresent()){
+            return existingStock.get();
+        }
+        String companyName = priceService.lookUpCompanyName(ticker);
+        Stock newStock = new Stock();
+        newStock.setTickerSymbol(ticker);
+        newStock.setCompanyName(companyName);
+        stockDao.addStock(newStock);
+        return newStock;
 
-        throw new UnsupportedOperationException("not builr yet yet");
     }
 }
