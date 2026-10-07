@@ -40,8 +40,8 @@ jobs:
 
       - name: Create test database
         run: |
-          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE stockportfoliodb_test"
-          mysql -h 127.0.0.1 -uroot -proot stockportfoliodb_test < sql/schema.sql
+          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE portfolioDB_test"
+          mysql -h 127.0.0.1 -uroot -proot portfolioDB_test < sql/schema.sql
 
       - name: Build and test
         run: mvn -B verify
