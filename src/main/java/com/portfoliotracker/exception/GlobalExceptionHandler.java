@@ -16,4 +16,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(InvalidSymbolException.class)
+    public ResponseEntity<ApiError> handleInvalidSymbol(InvalidSymbolException ex){
+        ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(PriceServiceUnavailableException.class)
+    public ResponseEntity<ApiError> handleUnavailablePrice(PriceServiceUnavailableException ex){
+        ApiError error = new ApiError(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
+    }
+
 }
