@@ -1,9 +1,13 @@
 package com.portfoliotracker.controller;
 
+import com.portfoliotracker.dto.LoginRequestDto;
 import com.portfoliotracker.dto.RegisterRequestDto;
 import com.portfoliotracker.dto.UserResponseDto;
 import com.portfoliotracker.model.UserAccount;
+import com.portfoliotracker.security.AuthInterceptor;
 import com.portfoliotracker.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +30,19 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto register(@Valid @RequestBody RegisterRequestDto request) {
         UserAccount user = authService.register(request);
+        return UserResponseDto.from(user);
+    }
+
+    @PostMapping("/login")
+    public UserResponseDto login(@Valid @RequestBody LoginRequestDto request, HttpServletRequest httpRequest) {
+        UserAccount user = authService.login(request.username(), request.password());
+
+        HttpSession old = httpRequest.getSession(false);
+        if (old != null) {
+            old.invalidate();
+        }
+        httpRequest.getSession(true).setAttribute(AuthInterceptor.USER_ID, user.getUserId());
+
         return UserResponseDto.from(user);
     }
 }
