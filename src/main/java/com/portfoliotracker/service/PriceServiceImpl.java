@@ -49,7 +49,7 @@ public class PriceServiceImpl implements PriceService{
     }
 
     @Override
-    //needs fixing fix it tomorrow
+    //its fixed two exceptions both caught in one line.
     public Optional<BigDecimal> getCurrentPrice(String tickerSymbol) {
         try {
             TwelveDataQuoteResponse quote = fetchQuote(tickerSymbol);
