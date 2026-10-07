@@ -20,9 +20,9 @@ public class GlobalExceptionHandler {
         return ErrorResponseDto.of(ex.getMessage());
     }
 
-    @ExceptionHandler(InvalidCredentialsException.class)
+    @ExceptionHandler({InvalidCredentialsException.class, NotLoggedInException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponseDto handleInvalidCredentials(InvalidCredentialsException ex) {
+    public ErrorResponseDto handleUnauthorized(RuntimeException ex) {
         return ErrorResponseDto.of(ex.getMessage());
     }
 
