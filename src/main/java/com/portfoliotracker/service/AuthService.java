@@ -3,6 +3,7 @@ package com.portfoliotracker.service;
 import com.portfoliotracker.dao.UserAccountDao;
 import com.portfoliotracker.dto.RegisterRequestDto;
 import com.portfoliotracker.exception.EmailTakenException;
+import com.portfoliotracker.exception.InvalidCredentialsException;
 import com.portfoliotracker.exception.UsernameTakenException;
 import com.portfoliotracker.model.UserAccount;
 import org.springframework.dao.DuplicateKeyException;
@@ -43,5 +44,20 @@ public class AuthService {
         } catch (DuplicateKeyException e) {
             throw new UsernameTakenException();
         }
+    }
+
+    public UserAccount login(String username, String password) {
+
+        UserAccount user = userAccountDao.findByUsername(username);
+
+        if (user == null) {
+            throw new InvalidCredentialsException();
+        }
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw new InvalidCredentialsException();
+        }
+
+        return user;
     }
 }
