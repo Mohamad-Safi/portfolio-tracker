@@ -7,7 +7,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,5 +34,22 @@ public class GlobalExceptionHandler {
             fields.putIfAbsent(fieldError.getField(), fieldError.getDefaultMessage());
         }
         return new ErrorResponseDto("Validation failed", fields);
+    }
+
+    //stock and price handlers.
+    @ExceptionHandler(StockNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponseDto handleStockNotFound(StockNotFoundException ex) {
+        return ErrorResponseDto.of(ex.getMessage());
+    }
+    @ExceptionHandler(InvalidSymbolException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleInvalidSymbol(InvalidSymbolException ex) {
+        return ErrorResponseDto.of(ex.getMessage());
+    }
+    @ExceptionHandler(PriceServiceUnavailableException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorResponseDto handleUnavailablePrice(PriceServiceUnavailableException ex) {
+        return ErrorResponseDto.of(ex.getMessage());
     }
 }
