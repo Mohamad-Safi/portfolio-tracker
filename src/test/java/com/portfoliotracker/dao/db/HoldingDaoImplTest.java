@@ -110,4 +110,12 @@ public class HoldingDaoImplTest {
         holdingDao.deleteHolding(createdHolding.getHoldingId());
     }
 
+    @Test
+    void findHoldingByUserAndStockReturnsNullWhenNotFound() {
+
+        Holding holding = holdingDao.findHoldingByUserAndStock(1, 999);
+
+        assertNull(holding);
+    }
+
 }

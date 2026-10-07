@@ -2,6 +2,7 @@ package com.portfoliotracker.dao.db;
 
 import com.portfoliotracker.mapper.HoldingMapper;
 import com.portfoliotracker.model.Holding;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
@@ -69,7 +70,11 @@ public class HoldingDaoImpl implements HoldingDao{
         String sql = "SELECT * FROM holding WHERE " +
                      "userId = ? AND stockId = ?";
 
-        return jdbcTemplate.queryForObject(sql, new HoldingMapper(), userId, stockId);
+        try {
+            return jdbcTemplate.queryForObject(sql, new HoldingMapper(), userId, stockId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
