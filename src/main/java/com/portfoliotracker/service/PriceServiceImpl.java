@@ -3,12 +3,10 @@ package com.portfoliotracker.service;
 
 import com.portfoliotracker.exception.InvalidSymbolException;
 import com.portfoliotracker.exception.PriceServiceUnavailableException;
+import com.portfoliotracker.external.TwelveDataClient;
 import com.portfoliotracker.external.TwelveDataQuoteResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,56 +17,57 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class PriceServiceImpl implements PriceService{
 
-    //bean for restclient already created in appconfig and handed in here in the constructor
+    private final TwelveDataClient twelveDataClient;
     private final long cacheMinutes;
-    private final RestClient restClient;
-    private final String apiKey;
 
     //ticker and its cached price
     private final Map<String, CachedPrice> cache = new ConcurrentHashMap<>();
-
     private record CachedPrice(BigDecimal price, LocalDateTime fetchedAt){}
 
-    public PriceServiceImpl(RestClient restClient, @Value("${twelvedata.api-key}") String apiKey,
+
+    public PriceServiceImpl(TwelveDataClient twelveDataClient,
                             @Value("${pricing.cache-minutes}") long cacheMinutes){
-        this.restClient = restClient;
-        this.apiKey = apiKey;
+        this.twelveDataClient = twelveDataClient;
         this.cacheMinutes = cacheMinutes;
     }
 
+    //helper method to check price.
+    private boolean isFresh(CachedPrice entry){
 
-    //ask twelve for quote and return its json as a java object.
-    private TwelveDataQuoteResponse fetchQuote(String tickerSymbol) {
-        //get request but to the api
-        try {
-            return restClient.get()
-                    .uri("/quote?symbol={symbol}&apikey={key}", tickerSymbol, apiKey)
-                    .retrieve()
-                    .body(TwelveDataQuoteResponse.class);//returns the JSON back into the td java class
-            //matching the fiels
-        }catch (HttpClientErrorException.NotFound ex){
-            throw new InvalidSymbolException("Sorry We could not find the Stock : " + tickerSymbol);
-        }catch (RestClientException ex){
-            throw new PriceServiceUnavailableException("Prices are currently not available, please try again later ");
+        LocalDateTime expiresAt = entry.fetchedAt().plusMinutes(cacheMinutes);
+        return LocalDateTime.now().isBefore(expiresAt);
+    }
+
+    @Override
+    public Optional<BigDecimal> getCurrentPrice(String tickerSymbol) {
+        String ticker = tickerSymbol.toUpperCase();
+        CachedPrice cached = cache.get(ticker);
+
+        if (cached!=null && isFresh(cached)){
+            return Optional.of(cached.price());
         }
+        try {
+            TwelveDataQuoteResponse quote = twelveDataClient.getQuote(ticker);
+            BigDecimal price = quote.getClose();
+            if (price != null){
+                cache.put(ticker, new CachedPrice(price, LocalDateTime.now()));
+                return Optional.of(price);
+            }
+        }catch (InvalidSymbolException | PriceServiceUnavailableException ex){
+            //fetching failed
+        }
+        if (cached != null){
+            return Optional.of(cached.price());
+        }else {
+            return Optional.empty();
+        }
+
     }
 
     @Override
     public String lookUpCompanyName(String tickerSymbol) {
-        TwelveDataQuoteResponse quote = fetchQuote(tickerSymbol);
+        TwelveDataQuoteResponse quote = twelveDataClient.getQuote(tickerSymbol);
         return quote.getName();
-    }
-
-    @Override
-    //its fixed two exceptions both caught in one line.
-    public Optional<BigDecimal> getCurrentPrice(String tickerSymbol) {
-        try {
-            TwelveDataQuoteResponse quote = fetchQuote(tickerSymbol);
-            return  Optional.ofNullable(quote.getClose());
-        }catch (InvalidSymbolException | PriceServiceUnavailableException ex){
-            return Optional.empty();
-        }
-
     }
 
 }
