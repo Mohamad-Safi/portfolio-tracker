@@ -4,6 +4,7 @@ import com.portfoliotracker.dao.UserAccountDao;
 import com.portfoliotracker.dto.RegisterRequestDto;
 import com.portfoliotracker.exception.EmailTakenException;
 import com.portfoliotracker.exception.InvalidCredentialsException;
+import com.portfoliotracker.exception.NotLoggedInException;
 import com.portfoliotracker.exception.UsernameTakenException;
 import com.portfoliotracker.model.UserAccount;
 import org.springframework.dao.DuplicateKeyException;
@@ -56,6 +57,18 @@ public class AuthService {
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new InvalidCredentialsException();
+        }
+
+        return user;
+    }
+
+    public UserAccount findById(int userId) {
+
+        UserAccount user = userAccountDao.findById(userId);
+
+        // the session can outlive the account it points at
+        if (user == null) {
+            throw new NotLoggedInException();
         }
 
         return user;
