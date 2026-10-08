@@ -1,8 +1,6 @@
 package com.portfoliotracker.dao;
 
 import com.portfoliotracker.model.Holding;
-import com.portfoliotracker.service.HoldingServiceImpl;
-import com.portfoliotracker.service.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles({"local", "test"})
 public class HoldingDaoImplTest {
 
-    private TransactionService transactionService;
-
-    @BeforeEach
-    void setUp() {
-        holdingDao = mock(HoldingDao.class);
-        transactionService = mock(TransactionService.class);
-
-        holdingService = new HoldingServiceImpl(holdingDao, transactionService);
-    }
+    @Autowired
+    private HoldingDao holdingDao;
 
     @Test
     void createAndFindHolding() {
