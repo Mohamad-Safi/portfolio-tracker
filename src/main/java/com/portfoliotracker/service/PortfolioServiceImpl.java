@@ -2,8 +2,7 @@ package com.portfoliotracker.service;
 
 
 import com.portfoliotracker.dao.StockDao;
-import com.portfoliotracker.dto.HoldingDao;//this needs to go into the dao package
-
+import com.portfoliotracker.dao.HoldingDao;
 import com.portfoliotracker.dto.PortfolioSummaryDto;
 import com.portfoliotracker.dto.PositionDto;
 import com.portfoliotracker.exception.StockNotFoundException;
