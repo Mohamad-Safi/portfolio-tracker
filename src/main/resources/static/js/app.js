@@ -52,7 +52,7 @@ function clearMessage() {
 // Draws a section and highlights its sidebar link.
 function showView(html, activeId) {
     $('#main').html(html);
-    $('.sidebar-navigation a').removeClass('active');
+    $('.top-navigation a').removeClass('active');
     if (activeId) $('#' + activeId).addClass('active');
 }
 
@@ -86,6 +86,7 @@ function refreshCurrentUser() {
     $.getJSON('/api/auth/me')
         .done(function (user) { setLoggedIn(user); })
         .fail(function () { setLoggedIn(null); });
+
 }
 function setLoggedIn(user) {
     const loggedIn = user !== null;
@@ -95,6 +96,7 @@ function setLoggedIn(user) {
     $('#registerButton').parent().toggle(!loggedIn);
     $('#profileButton').parent().toggle(loggedIn);
     $('#logoutButton').parent().toggle(loggedIn);
+    $('.top-navigation a').not('#homeButton').toggle(loggedIn);
 }
 
 // ── Login ─────────────────────────────────────────────────────────────────
@@ -208,16 +210,7 @@ $(function () {
         });
     }
 
-    link('homeButton', function () {
-        clearMessage();
-        showView(`
-            <section class="section">
-                <h2>Welcome to Portfolio Tracker</h2>
-                <p>Track your stocks with live prices from Twelve Data.</p>
-                <p class="muted">Use the menu on the left: Portfolio for your totals, Holdings to add, edit or delete stocks, and Stocks for live prices.</p>
-            </section>
-        `);
-    });
+    link('homeButton', showHome);
     link('loginButton', showLogin);
     link('registerButton', showRegister);
     link('profileButton', showProfile);
@@ -226,11 +219,7 @@ $(function () {
     link('holdingsButton', showHoldings);
     link('stocksButton', showStocks);
     link('watchlistButton', showWatchlist);
-    link('transactionsButton', function () {
-        clearMessage();
-        showView('<section class="section"><h2>Transactions</h2><p class="muted">Coming soon.</p></section>', 'transactionsButton');
-    });
-
+    link('transactionsButton', showTransactions);
     // On first load: logged in → portfolio; not logged in → login form.
     $.getJSON('/api/auth/me')
         .done(function (user) {
@@ -239,6 +228,6 @@ $(function () {
         })
         .fail(function () {
             setLoggedIn(null);
-            showLogin();
+            showHome();
         });
 });

@@ -1,7 +1,3 @@
-// stocks.js — all stocks, with a live price per stock.
-//   GET /api/v1/stocks               → the list
-//   GET /api/v1/stocks/{id}/price    → {tickerSymbol, price}, or 404 / 503 {error}
-
 function showStocks() {
     clearMessage();
     showView('<section class="section"><h2>Stocks</h2><p>Loading stocks...</p></section>', 'stocksButton');
@@ -15,7 +11,10 @@ function showStocks() {
                         <td>${esc(stock.tickerSymbol)}</td>
                         <td>${esc(stock.companyName)}</td>
                         <td class="num" id="price-${stock.stockId}">—</td>
-                        <td><button class="secondary price-button" data-id="${stock.stockId}">Get live price</button></td>
+                        <td>
+                            <button class="secondary price-button" data-id="${stock.stockId}">Get live price</button>
+                            <button class="watch-button" data-id="${stock.stockId}">+ Watchlist</button>
+                        </td>
                     </tr>`;
             });
 
@@ -30,7 +29,6 @@ function showStocks() {
                 </section>
             `, 'stocksButton');
 
-            // One click handler for every "Get live price" button.
             $('.price-button').on('click', function () {
                 const stockId = $(this).data('id');
                 const cell = $('#price-' + stockId);
@@ -40,6 +38,17 @@ function showStocks() {
                     .fail(function (xhr) {
                         cell.text('Unavailable');
                         showMessage(errorText(xhr, 'Price unavailable.'), true);
+                    });
+            });
+
+            $('.watch-button').on('click', function () {
+                const stockId = $(this).data('id');
+                apiSend('POST', '/api/watchlist', { stockId: stockId })
+                    .done(function () {
+                        showMessage(tickerFor(stockId) + ' added to your watchlist.', false);
+                    })
+                    .fail(function (xhr) {
+                        showMessage(errorText(xhr, 'Could not add to watchlist.'), true);
                     });
             });
         })
