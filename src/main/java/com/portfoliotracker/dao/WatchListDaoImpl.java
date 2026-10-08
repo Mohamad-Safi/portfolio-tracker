@@ -61,7 +61,9 @@ public class WatchListDaoImpl implements WatchListDao {
 
     @Override
     public void removeWatchListItem(int userId, int stockId) {
-       final String sql = "DELETE FROM watchlist_item" +
+       final String sql = "DELETE FROM watchlist_item " +
                           "WHERE userId = ? AND stockId = ?";
+
+       jdbcTemplate.update(sql, userId, stockId);
     }
 }
