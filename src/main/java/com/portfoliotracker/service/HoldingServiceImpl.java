@@ -1,6 +1,7 @@
 package com.portfoliotracker.service;
 
 import com.portfoliotracker.dao.HoldingDao;
+import com.portfoliotracker.exception.HoldingNotFoundException;
 import com.portfoliotracker.model.Holding;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,8 @@ public class HoldingServiceImpl implements HoldingService {
     }
 
     @Override
-    public Holding getHoldingById(int holdingId) {
-        return holdingDao.findHoldingById(holdingId);
+    public Holding getHoldingById(int userId, int holdingId) {
+        return getUserHolding(userId, holdingId);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class HoldingServiceImpl implements HoldingService {
 
             BigDecimal newAveragePrice = (oldCost.add(newCost)).divide(newQuantity, 4, RoundingMode.HALF_UP);
 
-            return updateHolding(existingHolding.getHoldingId(), newQuantity, newAveragePrice);
+            return updateHolding(existingHolding.getUserId(), existingHolding.getHoldingId(), newQuantity, newAveragePrice);
         }
 
         Holding holding = new Holding();
@@ -61,7 +62,7 @@ public class HoldingServiceImpl implements HoldingService {
     }
 
     @Override
-    public Holding updateHolding(int holdingId, BigDecimal quantity, BigDecimal averagePurchasePrice) {
+    public Holding updateHolding(int userId, int holdingId, BigDecimal quantity, BigDecimal averagePurchasePrice) {
 
         if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than 0");
@@ -70,7 +71,7 @@ public class HoldingServiceImpl implements HoldingService {
             throw new IllegalArgumentException("Average purchase price must be greater than 0");
         }
 
-        Holding updatedHolding = holdingDao.findHoldingById(holdingId);
+        Holding updatedHolding = getUserHolding(userId, holdingId);
         updatedHolding.setAveragePurchasePrice(averagePurchasePrice);
         updatedHolding.setQuantity(quantity);
 
@@ -81,9 +82,21 @@ public class HoldingServiceImpl implements HoldingService {
 
 
     @Override
-    public void removeHolding(int holdingId) {
+    public void removeHolding(int userId, int holdingId) {
 
+        getHoldingById(userId, holdingId);
         holdingDao.deleteHolding(holdingId);
+    }
+
+    private Holding getUserHolding(int userId, int holdingId) {
+
+        Holding holding = holdingDao.findHoldingById(holdingId);
+
+        if (holding == null || holding.getUserId() != userId) {
+            throw new HoldingNotFoundException("Holding not found");
+        }
+
+        return holding;
     }
 
 
