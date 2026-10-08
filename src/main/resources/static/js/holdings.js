@@ -55,6 +55,13 @@ function drawHoldings(stocks, holdings) {
     showView(`
         <h2>Holdings</h2>
         <section class="section">
+        <h2>Add a new stock</h2>
+            <form id="newStockForm" class="inline-form" novalidate>
+                <div class="field"><label for="newTicker">Ticker</label><input id="newTicker" placeholder="e.g. TSLA"></div>
+             <button type="submit">Add stock</button>
+            </form>
+        </section>
+        <section class="section">
             <h2 id="holdingFormTitle">Add a holding</h2>
             <form id="holdingForm" class="inline-form" novalidate>
                 <div class="field"><label for="holdingStock">Stock</label><select id="holdingStock">${options}</select></div>
@@ -91,6 +98,20 @@ function drawHoldings(stocks, holdings) {
         request
             .done(function () { showHoldings(); showMessage(doneText, false); })
             .fail(function (xhr) { showMessage(errorText(xhr, 'Could not save the holding.'), true); });
+    });
+    // ADD A NEW STOCK by ticker → POST /api/v1/stocks
+    $('#newStockForm').on('submit', function (event) {
+        event.preventDefault();                                   // stop the page reloading
+        const ticker = $('#newTicker').val().trim();
+        if (!ticker) return showMessage('Enter a ticker, e.g. TSLA.', true);
+
+        apiSend('POST', '/api/v1/stocks', { tickerSymbol: ticker })
+            .done(function (stock) {
+                stockCache = null;                                // so the dropdown reloads with the new stock
+                showHoldings();
+                showMessage('Added ' + stock.tickerSymbol + ' — ' + stock.companyName + '. You can now pick it below.', false);
+            })
+            .fail(function (xhr) { showMessage(errorText(xhr, 'Could not add the stock.'), true); });
     });
 
     // READ ONE
