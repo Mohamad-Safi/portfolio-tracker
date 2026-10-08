@@ -25,11 +25,11 @@ public class WatchListItem {
         this.userId = userId;
     }
 
-    public int getStock() {
+    public int getStockId() {
         return stockId;
     }
 
-    public void setStock(int stockId) {
+    public void setStockId(int stockId) {
         this.stockId = stockId;
     }
 
