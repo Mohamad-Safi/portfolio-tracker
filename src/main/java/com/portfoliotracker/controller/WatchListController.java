@@ -1,8 +1,11 @@
 package com.portfoliotracker.controller;
 
 import com.portfoliotracker.dto.AddWatchListRequest;
+import com.portfoliotracker.exception.NotLoggedInException;
 import com.portfoliotracker.model.WatchListItem;
+import com.portfoliotracker.security.AuthInterceptor;
 import com.portfoliotracker.service.WatchListService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,23 +21,25 @@ public class WatchListController {
     }
 
     @GetMapping
-    public List<WatchListItem> getWatchList(@RequestParam int userId) {
+    public List<WatchListItem> getWatchList(HttpSession session) {
+
+        int userId = (Integer) session.getAttribute(AuthInterceptor.USER_ID);
+
         return watchListService.getWatchListByUserId(userId);
     }
 
     @PostMapping
-    public WatchListItem addWatchListItem(@RequestBody AddWatchListRequest request) {
+    public WatchListItem addWatchListItem(@RequestBody AddWatchListRequest request, HttpSession session) {
 
-        return watchListService.addWatchListItem(
-                request.getUserId(),
-                request.getStockId()
-        );
+        int userId = (Integer) session.getAttribute(AuthInterceptor.USER_ID);
+
+        return watchListService.addWatchListItem(userId, request.getStockId());
     }
 
     @DeleteMapping("/{stockId}")
-    public void removeWatchListItem(
-            @PathVariable int stockId,
-            @RequestParam int userId) {
+    public void removeWatchListItem(@PathVariable int stockId, HttpSession session) {
+
+        int userId = (Integer) session.getAttribute(AuthInterceptor.USER_ID);
 
         watchListService.removeWatchListItem(userId, stockId);
     }

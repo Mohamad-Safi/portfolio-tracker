@@ -20,4 +20,13 @@ public class HoldingExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("error", exception.getMessage()));
     }
+
+    @ExceptionHandler(HoldingNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleHoldingNotFound(
+            HoldingNotFoundException exception) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", exception.getMessage()));
+    }
 }

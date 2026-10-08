@@ -11,9 +11,9 @@ public interface HoldingService {
 
     List<Holding> getHoldingsByUserId(int userId);
 
-    Holding getHoldingById(int holdingId);
+    Holding getHoldingById(int userId, int holdingId);
 
-    Holding updateHolding(int holdingId, BigDecimal quantity, BigDecimal averagePurchasePrice);
+    Holding updateHolding(int userId, int holdingId, BigDecimal quantity, BigDecimal averagePurchasePrice);
 
-    void removeHolding(int holdingId);
+    void removeHolding(int userId, int holdingId);
 }

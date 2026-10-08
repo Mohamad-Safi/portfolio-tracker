@@ -2,12 +2,11 @@ package com.portfoliotracker.service;
 
 
 import com.portfoliotracker.dao.HoldingDao;
+import com.portfoliotracker.exception.HoldingNotFoundException;
 import com.portfoliotracker.model.Holding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -19,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 public class HoldingServiceImplTest {
 
-    @Autowired
+
     HoldingService holdingService;
     HoldingDao holdingDao;
 
@@ -42,14 +41,11 @@ public class HoldingServiceImplTest {
         holding2.setUserId(1);
         holding2.setStockId(2);
 
-        List<Holding> expectedHoldings =
-                Arrays.asList(holding1, holding2);
+        List<Holding> expectedHoldings = Arrays.asList(holding1, holding2);
 
-        when(holdingDao.getHoldingsByUserId(1))
-                .thenReturn(expectedHoldings);
+        when(holdingDao.getHoldingsByUserId(1)).thenReturn(expectedHoldings);
 
-        List<Holding> actualHoldings =
-                holdingService.getHoldingsByUserId(1);
+        List<Holding> actualHoldings = holdingService.getHoldingsByUserId(1);
 
         assertEquals(2, actualHoldings.size());
         assertEquals(expectedHoldings, actualHoldings);
@@ -60,24 +56,19 @@ public class HoldingServiceImplTest {
     @Test
     void getHoldingById() {
 
+        int userId = 1;
+        int holdingId = 10;
+
         Holding holding = new Holding();
-        holding.setHoldingId(1);
-        holding.setUserId(1);
-        holding.setStockId(1);
-        holding.setQuantity(new BigDecimal("10"));
-        holding.setAveragePurchasePrice(new BigDecimal("150.00"));
+        holding.setHoldingId(holdingId);
+        holding.setUserId(userId);
 
-        when(holdingDao.findHoldingById(1))
-                .thenReturn(holding);
+        when(holdingDao.findHoldingById(holdingId)).thenReturn(holding);
 
-        Holding result = holdingService.getHoldingById(1);
+        Holding result = holdingService.getHoldingById(userId, holdingId);
 
-        assertNotNull(result);
-        assertEquals(1, result.getHoldingId());
-        assertEquals(1, result.getUserId());
-        assertEquals(1, result.getStockId());
-
-        verify(holdingDao).findHoldingById(1);
+        assertEquals(holdingId, result.getHoldingId());
+        assertEquals(userId, result.getUserId());
     }
 
     @Test
@@ -90,12 +81,8 @@ public class HoldingServiceImplTest {
                     return holding;
                 });
 
-        Holding result = holdingService.addHolding(
-                1,
-                1,
-                new BigDecimal("10"),
-                new BigDecimal("150.00")
-        );
+        Holding result = holdingService.addHolding(1, 1, new BigDecimal("10"),
+                                                    new BigDecimal("150.00"));
 
         assertNotNull(result);
         assertEquals(1, result.getHoldingId());
@@ -114,13 +101,7 @@ public class HoldingServiceImplTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> holdingService.addHolding(
-                        1,
-                        1,
-                        BigDecimal.ZERO,
-                        new BigDecimal("150.00")
-                )
-        );
+                () -> holdingService.addHolding(1, 1, BigDecimal.ZERO, new BigDecimal("150.00")));
 
         verify(holdingDao, never()).createHolding(any(Holding.class));
     }
@@ -129,16 +110,9 @@ public class HoldingServiceImplTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> holdingService.addHolding(
-                        1,
-                        1,
-                        null,
-                        new BigDecimal("150.00")
-                )
-        );
+                () -> holdingService.addHolding(1, 1, null, new BigDecimal("150.00")));
 
-        verify(holdingDao, never())
-                .createHolding(any(Holding.class));
+        verify(holdingDao, never()).createHolding(any(Holding.class));
     }
 
     @Test
@@ -146,48 +120,33 @@ public class HoldingServiceImplTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> holdingService.addHolding(
-                        1,
-                        1,
-                        new BigDecimal("10"),
-                        BigDecimal.ZERO
-                )
-        );
+                () -> holdingService.addHolding(1, 1, new BigDecimal("10"), BigDecimal.ZERO));
 
         verify(holdingDao, never())
                 .createHolding(any(Holding.class));
     }
 
     @Test
-    void updateHolding() {
+    void updateHoldingTest() {
 
-        Holding existingHolding = new Holding();
-        existingHolding.setHoldingId(1);
-        existingHolding.setUserId(1);
-        existingHolding.setStockId(1);
-        existingHolding.setQuantity(new BigDecimal("10"));
-        existingHolding.setAveragePurchasePrice(
-                new BigDecimal("150.00"));
+        int userId = 1;
+        int holdingId = 10;
 
-        when(holdingDao.findHoldingById(1))
-                .thenReturn(existingHolding);
+        Holding holding = new Holding();
+        holding.setHoldingId(holdingId);
+        holding.setUserId(userId);
 
-        Holding result = holdingService.updateHolding(
-                1,
-                new BigDecimal("20"),
-                new BigDecimal("175.00")
-        );
+        when(holdingDao.findHoldingById(holdingId)).thenReturn(holding);
 
-        assertEquals(0,
-                new BigDecimal("20")
-                        .compareTo(result.getQuantity()));
+        BigDecimal quantity = new BigDecimal("20");
+        BigDecimal price = new BigDecimal("150");
 
-        assertEquals(0,
-                new BigDecimal("175.00")
-                        .compareTo(result.getAveragePurchasePrice()));
+        Holding result = holdingService.updateHolding(userId, holdingId, quantity, price);
 
-        verify(holdingDao).findHoldingById(1);
-        verify(holdingDao).updateHolding(existingHolding);
+        assertEquals(quantity, result.getQuantity());
+        assertEquals(price, result.getAveragePurchasePrice());
+
+        verify(holdingDao).updateHolding(holding);
     }
 
     @Test
@@ -195,15 +154,10 @@ public class HoldingServiceImplTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> holdingService.updateHolding(
-                        1,
-                        BigDecimal.ZERO,
-                        new BigDecimal("150.00")
-                )
-        );
+                () -> holdingService.updateHolding(1, 1, BigDecimal.ZERO,
+                                                    new BigDecimal("150.00")));
 
-        verify(holdingDao, never())
-                .updateHolding(any(Holding.class));
+        verify(holdingDao, never()).updateHolding(any(Holding.class));
     }
 
     @Test
@@ -211,22 +165,54 @@ public class HoldingServiceImplTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> holdingService.updateHolding(
-                        1,
-                        new BigDecimal("10"),
-                        BigDecimal.ZERO
-                )
-        );
+                () -> holdingService.updateHolding(1, 1, new BigDecimal("10"), BigDecimal.ZERO));
 
-        verify(holdingDao, never())
-                .updateHolding(any(Holding.class));
+        verify(holdingDao, never()).updateHolding(any(Holding.class));
     }
 
     @Test
-    void removeHolding() {
+    void removeHoldingTest() {
 
-        holdingService.removeHolding(1);
+        int userId = 1;
+        int holdingId = 10;
 
-        verify(holdingDao).deleteHolding(1);
+        Holding holding = new Holding();
+        holding.setHoldingId(holdingId);
+        holding.setUserId(userId);
+
+        when(holdingDao.findHoldingById(holdingId)).thenReturn(holding);
+
+        holdingService.removeHolding(userId, holdingId);
+
+        verify(holdingDao).deleteHolding(holdingId);
+    }
+
+    @Test
+    void cannotDeleteAnotherUsersHolding() {
+
+        Holding holding = new Holding();
+        holding.setHoldingId(10);
+        holding.setUserId(2);
+
+        when(holdingDao.findHoldingById(10)).thenReturn(holding);
+
+        assertThrows(HoldingNotFoundException.class, () ->
+                holdingService.removeHolding(1, 10));
+
+        verify(holdingDao, never()).deleteHolding(10);
+    }
+
+    @Test
+    void cannotViewAnotherUsersHolding() {
+
+        Holding holding = new Holding();
+        holding.setHoldingId(10);
+        holding.setUserId(2);
+
+        when(holdingDao.findHoldingById(10)).thenReturn(holding);
+
+        assertThrows(HoldingNotFoundException.class, () ->
+                holdingService.getHoldingById(1, 10)
+        );
     }
 }

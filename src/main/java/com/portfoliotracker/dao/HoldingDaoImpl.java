@@ -59,9 +59,15 @@ public class HoldingDaoImpl implements HoldingDao{
     @Override
     public Holding findHoldingById(int holdingId) {
 
-        String sql = "SELECT * FROM holding WHERE holdingId = ?";
+        try {
+            String sql = "SELECT * FROM holding WHERE holdingId = ?";
 
-        return jdbcTemplate.queryForObject(sql, new HoldingMapper(), holdingId);
+            return jdbcTemplate.queryForObject(sql, new HoldingMapper(), holdingId);
+        }
+        catch (EmptyResultDataAccessException ex){
+            return null;
+        }
+
     }
 
     @Override
