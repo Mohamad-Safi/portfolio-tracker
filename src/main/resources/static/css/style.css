@@ -133,3 +133,24 @@ th { color: #666; }
 .gain { color: #1a7f37; }
 .loss { color: #c62828; }
 .muted { color: #666; font-size: 14px; }
+/* ── Bigger, easier-to-read sizes (overrides the rules above) ── */
+body { font-size: 18px; }
+.logo { font-size: 24px; }
+.top-navigation a, .login a { font-size: 18px; }
+.current-user { font-size: 16px; }
+.sidebar { width: 240px; }
+.sidebar-navigation a { font-size: 18px; padding: 16px 22px; }
+.section { padding: 28px; }
+.message { font-size: 18px; }
+
+form .field { max-width: 420px; margin-bottom: 16px; }
+form label { font-size: 16px; }
+input, select { font-size: 17px; padding: 12px; }
+button { font-size: 16px; padding: 12px 20px; }
+td button { font-size: 14px; padding: 6px 12px; }
+
+table { font-size: 17px; }
+th, td { padding: 12px; }
+.totals span { font-size: 15px; }
+.totals strong { font-size: 26px; }
+.muted { font-size: 16px; }

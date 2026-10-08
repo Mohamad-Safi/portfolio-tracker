@@ -84,8 +84,17 @@ function tickerFor(stockId) {
 // Shows "Logged in as ada" in the top bar (or nothing if not logged in).
 function refreshCurrentUser() {
     $.getJSON('/api/auth/me')
-        .done(function (user) { $('#currentUser').text('Logged in as ' + user.username); })
-        .fail(function () { $('#currentUser').text(''); });
+        .done(function (user) { setLoggedIn(user); })
+        .fail(function () { setLoggedIn(null); });
+}
+function setLoggedIn(user) {
+    const loggedIn = user !== null;
+    $('#currentUser').text(loggedIn ? 'Logged in as ' + user.username : '');
+    // Each link sits inside a <div class="login">, so we hide/show that div.
+    $('#loginButton').parent().toggle(!loggedIn);
+    $('#registerButton').parent().toggle(!loggedIn);
+    $('#profileButton').parent().toggle(loggedIn);
+    $('#logoutButton').parent().toggle(loggedIn);
 }
 
 // ── Login ─────────────────────────────────────────────────────────────────
@@ -225,8 +234,11 @@ $(function () {
     // On first load: logged in → portfolio; not logged in → login form.
     $.getJSON('/api/auth/me')
         .done(function (user) {
-            $('#currentUser').text('Logged in as ' + user.username);
+            setLoggedIn(user);
             showPortfolio();
         })
-        .fail(showLogin);
+        .fail(function () {
+            setLoggedIn(null);
+            showLogin();
+        });
 });

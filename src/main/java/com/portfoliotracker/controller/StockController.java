@@ -1,15 +1,14 @@
 package com.portfoliotracker.controller;
 
 
+import com.portfoliotracker.dto.AddStockRequestDto;
 import com.portfoliotracker.dto.PriceDto;
 import com.portfoliotracker.exception.PriceServiceUnavailableException;
 import com.portfoliotracker.model.Stock;
 import com.portfoliotracker.service.PriceService;
 import com.portfoliotracker.service.StockService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -50,5 +49,10 @@ public class StockController {
     @GetMapping("/{stockId}")
     public Stock getStockById(@PathVariable int stockId){
         return stockService.getStockById(stockId);
+    }
+
+    @PostMapping
+    public Stock addStock(@Valid @RequestBody AddStockRequestDto request) {
+        return stockService.findOrCreateStock(request.tickerSymbol());
     }
 }
