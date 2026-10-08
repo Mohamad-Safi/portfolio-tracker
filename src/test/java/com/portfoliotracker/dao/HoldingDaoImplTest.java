@@ -18,24 +18,25 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HoldingDaoImplTest {
 
     @Autowired
-    HoldingDao holdingDao;
-
+    private HoldingDao holdingDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update(
-                "INSERT IGNORE INTO user_account " +
-                        "(userId, username, email, passwordHash) " +
-                        "VALUES (1, 'testuser1', 'test1@example.com', 'testhash1')"
-        );
 
-        jdbcTemplate.update(
-                "INSERT IGNORE INTO stock " +
-                        "(stockId, tickerSymbol, companyName) " +
-                        "VALUES (1, 'AAPL', 'Apple Inc.')"
-        );
+        jdbcTemplate.update("""
+        INSERT IGNORE INTO user_account
+        (userId, username, email, passwordHash)
+        VALUES (1, 'holding_test_user',
+                'holding_test@example.com', 'test_hash')
+        """);
+
+        jdbcTemplate.update("""
+        INSERT IGNORE INTO stock
+        (stockId, tickerSymbol, companyName)
+        VALUES (1, 'AAPL', 'Apple Inc.')
+        """);
     }
 
     @Test
