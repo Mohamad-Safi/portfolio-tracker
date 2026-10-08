@@ -19,6 +19,25 @@ public class HoldingDaoImplTest {
 
     @Autowired
     private HoldingDao holdingDao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+
+        jdbcTemplate.update("""
+        INSERT IGNORE INTO user_account
+        (userId, username, email, passwordHash)
+        VALUES (1, 'holding_test_user',
+                'holding_test@example.com', 'test_hash')
+        """);
+
+        jdbcTemplate.update("""
+        INSERT IGNORE INTO stock
+        (stockId, tickerSymbol, companyName)
+        VALUES (1, 'AAPL', 'Apple Inc.')
+        """);
+    }
 
     @Test
     void createAndFindHolding() {
