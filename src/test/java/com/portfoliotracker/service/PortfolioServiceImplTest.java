@@ -1,8 +1,7 @@
 package com.portfoliotracker.service;
-
-import com.portfoliotracker.dao.StockDao;
-import com.portfoliotracker.dto.HoldingDao;      // same import as in PortfolioServiceImpl
 import com.portfoliotracker.dto.PortfolioSummaryDto;
+import com.portfoliotracker.dao.StockDao;
+import com.portfoliotracker.dao.HoldingDao;     // same import as in PortfolioServiceImpl
 import com.portfoliotracker.dto.PositionDto;
 import com.portfoliotracker.model.Holding;
 import com.portfoliotracker.model.Stock;
