@@ -1,6 +1,8 @@
 package com.portfoliotracker.dao;
 
 import com.portfoliotracker.model.Holding;
+import com.portfoliotracker.service.HoldingServiceImpl;
+import com.portfoliotracker.service.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +19,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles({"local", "test"})
 public class HoldingDaoImplTest {
 
-    @Autowired
-    HoldingDao holdingDao;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private TransactionService transactionService;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update(
-                "INSERT IGNORE INTO user_account " +
-                        "(userId, username, email, passwordHash) " +
-                        "VALUES (1, 'testuser1', 'test1@example.com', 'testhash1')"
-        );
+        holdingDao = mock(HoldingDao.class);
+        transactionService = mock(TransactionService.class);
 
-        jdbcTemplate.update(
-                "INSERT IGNORE INTO stock " +
-                        "(stockId, tickerSymbol, companyName) " +
-                        "VALUES (1, 'AAPL', 'Apple Inc.')"
-        );
+        holdingService = new HoldingServiceImpl(holdingDao, transactionService);
     }
 
     @Test

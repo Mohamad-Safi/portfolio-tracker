@@ -8,7 +8,7 @@ public class Transaction {
     private int transactionId;
     private int userId;
     private int stockId;
-    private TransactionType transactionType;
+    private String transactionType;
     private BigDecimal quantity;
     private BigDecimal price;
     private LocalDateTime transactionDate;
@@ -33,15 +33,15 @@ public class Transaction {
         return stockId;
     }
 
-    public void setStock(int stock) {
+    public void setStockId(int stockId) {
         this.stockId = stockId;
     }
 
-    public TransactionType getTransactionType() {
+    public String getTransactionType() {
         return transactionType;
     }
 
-    public void setTransactionType(TransactionType transactionType) {
+    public void setTransactionType(String transactionType) {
         this.transactionType = transactionType;
     }
 

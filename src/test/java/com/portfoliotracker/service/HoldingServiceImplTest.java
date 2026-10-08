@@ -22,10 +22,14 @@ public class HoldingServiceImplTest {
     HoldingService holdingService;
     HoldingDao holdingDao;
 
+    private TransactionService transactionService;
+
     @BeforeEach
     void setUp() {
         holdingDao = mock(HoldingDao.class);
-        holdingService = new HoldingServiceImpl(holdingDao);
+        transactionService = mock(TransactionService.class);
+
+        holdingService = new HoldingServiceImpl(holdingDao, transactionService);
     }
 
     @Test
