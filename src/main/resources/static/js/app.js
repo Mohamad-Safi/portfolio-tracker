@@ -2,32 +2,29 @@
 // Each section (portfolio, stocks, holdings, watchlist) lives in its own file
 // and defines one function (showPortfolio, showStocks, ...) that this file calls.
 
-// ── Shared helpers (used by every section file) ───────────────────────────
-
-// Escapes text before putting it into HTML, so user data can never inject HTML/JS.
 function esc(value) {
     return $('<div>').text(value === null || value === undefined ? '' : value).html();
 }
 
-// 1686.67 -> "$1,686.67";  null -> "—"
+
 function money(value) {
     if (value === null || value === undefined) return '—';
-    return '$' + Number(value).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const n = Number(value);
+    const text = '$' + Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return n < 0 ? '-' + text : text;
 }
 
-// 23.91 -> "23.91%";  null -> "—"
+
 function percent(value) {
     return value === null || value === undefined ? '—' : Number(value).toFixed(2) + '%';
 }
 
-// A gain shows "+" and green, a loss shows red (sign as well as colour).
 function gainHtml(value, text) {
     if (value === null || value === undefined) return '—';
     const n = Number(value);
     return '<span class="' + (n < 0 ? 'loss' : 'gain') + '">' + (n > 0 ? '+' : '') + esc(text) + '</span>';
 }
 
-// Our API's errors look like {"error": "..."}; validation errors also have "fields".
 function errorText(xhr, fallback) {
     const body = xhr.responseJSON;
     if (body) {
@@ -49,11 +46,28 @@ function clearMessage() {
     showMessage('', false);
 }
 
-// Draws a section and highlights its sidebar link.
+
+const PAGE_HINTS = {
+    portfolioButton: 'What your investments are worth right now, and how much you have gained or lost.',
+    holdingsButton: 'The shares you own. Click "+ New position" to record a purchase, or ☰ on a row to view, edit or close it.',
+    stocksButton: 'Look up any company\'s current share price, or save it to your watchlist to follow later.',
+    watchlistButton: 'Companies you are keeping an eye on, without buying them.',
+    transactionsButton: 'A record of every buy and sell, newest first.'
+};
+
+// Draws a page, adds its hint under the title, and highlights its menu link.
 function showView(html, activeId) {
     $('#main').html(html);
-    $('.sidebar-navigation a').removeClass('active');
+    $('.top-navigation a').removeClass('active');
     if (activeId) $('#' + activeId).addClass('active');
+
+    const hint = PAGE_HINTS[activeId];
+    if (hint) {
+        // put the hint under the page header (Holdings) or under the first title (other pages)
+        const header = $('#main .page-header');
+        const anchor = header.length ? header : $('#main h2').first();
+        anchor.after($('<p class="page-hint">').text(hint));
+    }
 }
 
 // Sends JSON to our API. Returns a jQuery promise.
@@ -86,6 +100,7 @@ function refreshCurrentUser() {
     $.getJSON('/api/auth/me')
         .done(function (user) { setLoggedIn(user); })
         .fail(function () { setLoggedIn(null); });
+
 }
 function setLoggedIn(user) {
     const loggedIn = user !== null;
@@ -95,6 +110,13 @@ function setLoggedIn(user) {
     $('#registerButton').parent().toggle(!loggedIn);
     $('#profileButton').parent().toggle(loggedIn);
     $('#logoutButton').parent().toggle(loggedIn);
+    $('.top-navigation a').not('#homeButton').toggle(loggedIn);
+}
+
+// Opens (true) or closes (false) the ☰ navigation menu.
+function setMenuOpen(open) {
+    $('#menuPanel').prop('hidden', !open);
+    $('#menuToggle').attr('aria-expanded', open).toggleClass('open', open);
 }
 
 // ── Login ─────────────────────────────────────────────────────────────────
@@ -151,7 +173,7 @@ function showRegister() {
         const password = $('#registerPassword').val();
         const confirm = $('#registerConfirm').val();
 
-        // Front-end checks that mirror RegisterRequestDto (the server checks again).
+
         if (!username || !email || !password) return showMessage('Please fill in every field.', true);
         if (username.length < 3 || username.length > 30 || !/^[A-Za-z0-9_]+$/.test(username)) {
             return showMessage('Username must be 3–30 letters, digits or underscores.', true);
@@ -171,7 +193,7 @@ function showRegister() {
     });
 }
 
-// ── Profile ───────────────────────────────────────────────────────────────
+
 function showProfile() {
     clearMessage();
     $.getJSON('/api/auth/me')
@@ -188,7 +210,6 @@ function showProfile() {
         .fail(function (xhr) { showView(''); showMessage(errorText(xhr, 'Could not load profile.'), true); });
 }
 
-// ── Logout ────────────────────────────────────────────────────────────────
 function logout() {
     apiSend('POST', '/api/auth/logout')
         .always(function () {
@@ -199,7 +220,6 @@ function logout() {
         });
 }
 
-// ── Navigation: which function each link runs ─────────────────────────────
 $(function () {
     function link(id, handler) {
         $('#' + id).on('click', function (event) {
@@ -208,16 +228,7 @@ $(function () {
         });
     }
 
-    link('homeButton', function () {
-        clearMessage();
-        showView(`
-            <section class="section">
-                <h2>Welcome to Portfolio Tracker</h2>
-                <p>Track your stocks with live prices from Twelve Data.</p>
-                <p class="muted">Use the menu on the left: Portfolio for your totals, Holdings to add, edit or delete stocks, and Stocks for live prices.</p>
-            </section>
-        `);
-    });
+    link('homeButton', showHome);
     link('loginButton', showLogin);
     link('registerButton', showRegister);
     link('profileButton', showProfile);
@@ -226,12 +237,21 @@ $(function () {
     link('holdingsButton', showHoldings);
     link('stocksButton', showStocks);
     link('watchlistButton', showWatchlist);
-    link('transactionsButton', function () {
-        clearMessage();
-        showView('<section class="section"><h2>Transactions</h2><p class="muted">Coming soon.</p></section>', 'transactionsButton');
+    link('transactionsButton', showTransactions);
+
+    $('#menuToggle').on('click', function (event) {
+        event.stopPropagation();
+        setMenuOpen($('#menuPanel').prop('hidden'));
+    });
+    $('#menuPanel a').on('click', function () { setMenuOpen(false); });
+    $(document).on('click', function (event) {
+        if ($(event.target).closest('#menuPanel').length === 0) setMenuOpen(false);
+    });
+    $(document).on('keydown', function (event) {
+        if (event.key === 'Escape') setMenuOpen(false);
     });
 
-    // On first load: logged in → portfolio; not logged in → login form.
+
     $.getJSON('/api/auth/me')
         .done(function (user) {
             setLoggedIn(user);
@@ -239,6 +259,6 @@ $(function () {
         })
         .fail(function () {
             setLoggedIn(null);
-            showLogin();
+            showHome();
         });
 });
