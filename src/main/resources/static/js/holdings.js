@@ -10,7 +10,6 @@ let holdingsById = {};       // holdingId → holding, refilled every time the p
 let openPanelKey = null;     // which panel is open, e.g. "6:edit" (null = none) — shared with portfolio.js
 let openTicketFor = null;    // after adding a new stock, open the ticket with it selected
 
-// ── Load and draw the page ────────────────────────────────────────────────
 function showHoldings() {
     clearMessage();
     openPanelKey = null;
@@ -58,7 +57,7 @@ function drawHoldings(stocks, holdings) {
             </tr>`;
     });
 
-    // The stock dropdown for the order ticket
+
     let options = '';
     $.each(stocks, function (index, s) {
         options += `<option value="${s.stockId}">${esc(s.tickerSymbol)} — ${esc(s.companyName)}</option>`;
@@ -104,14 +103,13 @@ function drawHoldings(stocks, holdings) {
     wireOrderTicket();
     wireRowMenus();
 
-    // Just added a stock by ticker? Re-open the ticket with it selected.
+
     if (openTicketFor !== null) {
         openTicket(openTicketFor);
         openTicketFor = null;
     }
 }
 
-// ── Order ticket (CREATE) ─────────────────────────────────────────────────
 function wireOrderTicket() {
     $('#newPositionButton').on('click', function () { openTicket(); });
     $('#cancelOrder').on('click', closeTicket);
@@ -125,7 +123,7 @@ function wireOrderTicket() {
         $('#newTicker').focus();
     });
 
-    // BUY → POST /api/holdings
+
     $('#orderForm').on('submit', function (event) {
         event.preventDefault();
         const stockId = Number($('#orderStock').val());
@@ -142,7 +140,7 @@ function wireOrderTicket() {
             .fail(function (xhr) { showMessage(errorText(xhr, 'Could not open the position.'), true); });
     });
 
-    // ADD A STOCK BY TICKER → POST /api/v1/stocks
+
     $('#tickerForm').on('submit', function (event) {
         event.preventDefault();
         const ticker = $('#newTicker').val().trim();
@@ -178,13 +176,10 @@ function updateOrderTotal() {
     $('#orderTotal').text(money(total || 0));
 }
 
-// ── Row menus (☰) and the panel under a row ───────────────────────────────
 function wireRowMenus() {
-    // Event delegation: ONE handler on the table catches clicks from every row,
-    // including rows and panels that are added later.
+
     const table = $('#holdingsTable');
 
-    // Open / close one row's ☰ menu
     table.on('click', '.row-menu-button', function (event) {
         event.stopPropagation();   // stop the document click (bottom of file) closing it again
         const list = $(this).siblings('.row-menu-list');
@@ -193,7 +188,6 @@ function wireRowMenus() {
         list.prop('hidden', !wasHidden);
     });
 
-    // A choice in the menu
     table.on('click', '.row-action', function (event) {
         event.stopPropagation();
         const action = $(this).data('action');
@@ -204,10 +198,8 @@ function wireRowMenus() {
         if (action === 'close') showCloseConfirm(row, holdingId);
     });
 
-    // ✕ / Cancel / Keep buttons inside a panel
     table.on('click', '.close-panel', function () { closePanel(); });
 
-    // EDIT → PUT /api/holdings/{id}
     table.on('submit', '.edit-form', function (event) {
         event.preventDefault();
         const holdingId = $(this).data('id');
@@ -224,7 +216,6 @@ function wireRowMenus() {
             .fail(function (xhr) { showMessage(errorText(xhr, 'Could not update the position.'), true); });
     });
 
-    // CLOSE POSITION → DELETE /api/holdings/{id}
     table.on('click', '.confirm-close', function () {
         const holdingId = $(this).data('id');
         const ticker = tickerFor(holdingsById[holdingId].stockId);
@@ -241,8 +232,6 @@ function closeRowMenus() {
     $('.row-menu-list').prop('hidden', true);
 }
 
-// Opens a panel in a new table row right under the clicked position.
-// Only one panel at a time; choosing the same thing again closes it.
 function openPanel(row, key, html) {
     const sameAsBefore = openPanelKey === key;
     closePanel();
@@ -272,7 +261,6 @@ function tile(label, valueHtml) {
     return `<div class="tile"><span class="tile-label">${label}</span><strong>${valueHtml}</strong></div>`;
 }
 
-// ── EDIT form (UPDATE) ────────────────────────────────────────────────────
 function showEdit(row, holdingId) {
     const h = holdingsById[holdingId];
     openPanel(row, holdingId + ':edit', `
@@ -288,7 +276,6 @@ function showEdit(row, holdingId) {
     `);
 }
 
-// ── CLOSE POSITION confirm (DELETE) ───────────────────────────────────────
 function showCloseConfirm(row, holdingId) {
     const h = holdingsById[holdingId];
     openPanel(row, holdingId + ':close', `
@@ -302,5 +289,4 @@ function showCloseConfirm(row, holdingId) {
     `);
 }
 
-// Clicking anywhere else on the page closes any open ☰ row menu.
 $(document).on('click', closeRowMenus);

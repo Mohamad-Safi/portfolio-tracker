@@ -55,7 +55,7 @@ const PAGE_HINTS = {
     transactionsButton: 'A record of every buy and sell, newest first.'
 };
 
-// Draws a page, adds its hint under the title, and highlights its menu link.
+
 function showView(html, activeId) {
     $('#main').html(html);
     $('.top-navigation a').removeClass('active');
@@ -70,7 +70,7 @@ function showView(html, activeId) {
     }
 }
 
-// Sends JSON to our API. Returns a jQuery promise.
+
 function apiSend(method, url, body) {
     return $.ajax({
         type: method,
@@ -95,7 +95,7 @@ function tickerFor(stockId) {
     return s ? s.tickerSymbol : 'Stock ' + stockId;
 }
 
-// Shows "Logged in as ada" in the top bar (or nothing if not logged in).
+
 function refreshCurrentUser() {
     $.getJSON('/api/auth/me')
         .done(function (user) { setLoggedIn(user); })
@@ -113,13 +113,12 @@ function setLoggedIn(user) {
     $('.top-navigation a').not('#homeButton').toggle(loggedIn);
 }
 
-// Opens (true) or closes (false) the ☰ navigation menu.
+
 function setMenuOpen(open) {
     $('#menuPanel').prop('hidden', !open);
     $('#menuToggle').attr('aria-expanded', open).toggleClass('open', open);
 }
 
-// ── Login ─────────────────────────────────────────────────────────────────
 function showLogin() {
     clearMessage();
     showView(`
@@ -149,7 +148,6 @@ function showLogin() {
     });
 }
 
-// ── Register ──────────────────────────────────────────────────────────────
 function showRegister() {
     clearMessage();
     showView(`
