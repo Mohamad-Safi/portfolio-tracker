@@ -1,8 +1,4 @@
-// portfolio.js — the portfolio summary: GET /api/v1/portfolio
-// The server already did all the maths (cost, value, gain, totals);
-// this file only DISPLAYS the PortfolioSummaryDto it returns.
-// The ☰ menu on each row opens a details panel (helpers openPanel, panelHeader,
-// tile and closeRowMenus live in holdings.js and are shared).
+
 
 let portfolioPositions = [];   // the positions from the last load, used by "View details"
 

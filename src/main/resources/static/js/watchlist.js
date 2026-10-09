@@ -50,7 +50,6 @@ function showWatchlist() {
                     });
             });
 
-            // REMOVE from watchlist → DELETE /api/watchlist/{stockId}
             $('.remove-watch-button').on('click', function () {
                 const stockId = $(this).data('id');
                 const ticker = tickerFor(stockId);
