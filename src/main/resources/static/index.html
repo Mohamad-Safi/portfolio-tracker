@@ -3,24 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Tracker</title>
+    <title>Stock Portfolio Tracker</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 <header class="topbar">
-    <div class="logo">Portfolio Tracker</div>
+    <button id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="menuPanel">
+        <span class="bars"><span></span><span></span><span></span></span>
+        <span class="menu-label">Menu</span>
+    </button>
 
-    <!-- Main navigation: the app's pages -->
-    <nav class="top-navigation">
-        <a href="#" id="homeButton">Home</a>
-        <a href="#" id="portfolioButton">Portfolio</a>
-        <a href="#" id="holdingsButton">Holdings</a>
-        <a href="#" id="stocksButton">Stocks</a>
-        <a href="#" id="watchlistButton">Watchlist</a>
-        <a href="#" id="transactionsButton">Transactions</a>
-    </nav>
-
-    <!-- Account links: which ones show depends on whether you're logged in -->
+    <div class="logo">Stock Portfolio Tracker</div>
     <div class="account-navigation">
         <span id="currentUser" class="current-user"></span>
         <div class="login"><a href="#" id="profileButton">Profile</a></div>
@@ -30,14 +23,20 @@
     </div>
 </header>
 
+<nav id="menuPanel" class="top-navigation menu-panel" hidden>
+    <a href="#" id="homeButton">Home</a>
+    <a href="#" id="portfolioButton">Portfolio</a>
+    <a href="#" id="holdingsButton">Holdings</a>
+    <a href="#" id="stocksButton">Stocks</a>
+    <a href="#" id="watchlistButton">Watchlist</a>
+    <a href="#" id="transactionsButton">Transactions</a>
+</nav>
+
 <main class="main-content">
-    <!-- Messages (success / error) for every section appear here -->
     <p id="message" class="message"></p>
-    <!-- Each section's content is drawn in here by its own JS file -->
     <div id="main"></div>
 </main>
 
-<!-- jQuery first, then the shared app.js, then one file per section -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="/js/app.js"></script>
 <script src="/js/home.js"></script>

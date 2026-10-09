@@ -6,7 +6,7 @@ function showHome() {
     clearMessage();
     showView(`
         <section class="section hero">
-            <h2>Welcome to Portfolio Tracker</h2>
+            <h2>Welcome to Stock Portfolio Tracker</h2>
             <p>Track your investments with live prices, and see your profit or loss at a glance.</p>
         </section>
 
@@ -37,14 +37,14 @@ function showHome() {
             { proName: 'NASDAQ:AMZN', title: 'Amazon' }
         ],
         showSymbolLogo: true,
-        colorTheme: 'dark',
+        colorTheme: 'light',
         isTransparent: true,
         displayMode: 'adaptive',
         locale: 'en'
     });
 
     addTradingViewWidget('marketOverview', 'market-overview', {
-        colorTheme: 'dark',
+        colorTheme: 'light',
         dateRange: '12M',
         showChart: true,
         locale: 'en',
@@ -68,9 +68,7 @@ function showHome() {
     });
 }
 
-// Adds one TradingView widget into the container with the given id.
-// TradingView's script reads its settings from the text inside its own <script> tag,
-// so we build that tag by hand (jQuery's .html() would not run it properly).
+//trading view widget
 function addTradingViewWidget(containerId, widgetName, settings) {
     const script = document.createElement('script');
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-' + widgetName + '.js';

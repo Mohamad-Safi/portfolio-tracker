@@ -1,99 +1,81 @@
 /* ============================================================
-   Portfolio Tracker — dark "trading terminal" theme
-   Only this file changed: every page keeps working as before.
+   Stock Portfolio Tracker — light, clean theme
+   Every colour lives in :root, so the whole look changes from there.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* ── Colour palette: change the whole look from here ───────── */
 :root {
-    --bg:          #0a0f1c;   /* page background */
-    --panel:       #111827;   /* cards, sidebar, top bar */
-    --panel-2:     #172033;   /* inputs, table header, hover */
-    --border:      #1f2a40;
-    --text:        #e5e9f2;
-    --muted:       #8b96ad;
-    --accent:      #4f7cff;   /* main blue */
-    --accent-soft: rgba(79, 124, 255, 0.14);
-    --gain:        #22c55e;
-    --gain-soft:   rgba(34, 197, 94, 0.12);
-    --loss:        #ef4444;
-    --loss-soft:   rgba(239, 68, 68, 0.12);
-    --radius:      12px;
-    --mono:        'JetBrains Mono', ui-monospace, Menlo, monospace;
+    --bg:          #f5f7fb;   /* page background (soft off-white) */
+    --panel:       #ffffff;   /* cards, top bar, menus */
+    --panel-2:     #f1f4f9;   /* table header, hover, inputs */
+    --border:      #e3e8ef;
+    --text:        #0f172a;
+    --muted:       #64748b;
+    --accent:      #2563eb;   /* main blue */
+    --accent-dark: #1d4ed8;
+    --accent-soft: #eaf1ff;
+    --gain:        #15803d;
+    --gain-soft:   #e8f7ee;
+    --loss:        #dc2626;
+    --loss-soft:   #fdecec;
+    --radius:      14px;
+    --shadow:      0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.05);
 }
 
 * { box-sizing: border-box; }
+
+/* Anything with the "hidden" attribute stays hidden, even if a class sets display */
+[hidden] { display: none !important; }
 
 body {
     margin: 0;
     font-family: 'Inter', Arial, sans-serif;
     font-size: 16px;
+    line-height: 1.5;
     background: var(--bg);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
 }
 
-a { color: inherit; }
+a { color: var(--accent); }
 
 /* ── Top bar ───────────────────────────────────────────────── */
 .topbar {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 20;
     height: 64px;
     display: flex;
     align-items: center;
+    gap: 14px;
     padding: 0 28px;
-    background: rgba(17, 24, 39, 0.92);
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
 }
 
 .logo {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
     display: flex;
     align-items: center;
     gap: 10px;
+    white-space: nowrap;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text);
 }
 
-/* little green "live" dot before the logo */
+/* small blue badge with a rising line, before the name */
 .logo::before {
     content: "";
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--gain);
-    box-shadow: 0 0 10px var(--gain);
-}
-
-.top-navigation { margin-left: 36px; }
-
-.top-navigation a,
-.login a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 500;
-    padding: 8px 14px;
+    width: 28px;
+    height: 28px;
     border-radius: 8px;
-    transition: color 0.15s, background 0.15s;
+    background:
+        linear-gradient(135deg, transparent 45%, #fff 46%, #fff 54%, transparent 55%) center / 60% 60% no-repeat,
+        var(--accent);
 }
-
-.top-navigation a:hover,
-.login a:hover {
-    color: var(--text);
-    background: var(--panel-2);
-}
-
-/* make Register/Login stand out as a button */
-#registerButton {
-    color: #fff;
-    background: var(--accent);
-}
-#registerButton:hover { background: #3d6bf0; color: #fff; }
 
 .account-navigation {
     margin-left: auto;
@@ -103,76 +85,123 @@ a { color: inherit; }
 }
 
 .current-user {
+    white-space: nowrap;
     color: var(--muted);
     font-size: 14px;
-    margin-right: 8px;
+    margin-right: 6px;
 }
 
-/* ── Layout: sidebar + main ────────────────────────────────── */
-.layout {
-    display: flex;
-    min-height: calc(100vh - 64px);
-}
-
-.sidebar {
-    width: 230px;
-    flex-shrink: 0;
-    background: var(--panel);
-    border-right: 1px solid var(--border);
-}
-
-.sidebar-navigation {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 20px 14px;
-    position: sticky;
-    top: 64px;
-}
-
-.sidebar-navigation a {
-    padding: 11px 14px;
-    border-radius: 8px;
-    color: var(--muted);
+.login a {
+    display: inline-block;
+    color: var(--text);
     text-decoration: none;
     font-size: 15px;
     font-weight: 500;
-    transition: color 0.15s, background 0.15s;
+    padding: 8px 14px;
+    border-radius: 8px;
 }
+.login a:hover { background: var(--panel-2); }
 
-.sidebar-navigation a:hover {
+/* Register stands out as the main button */
+#registerButton { color: #fff; background: var(--accent); }
+#registerButton:hover { background: var(--accent-dark); }
+
+/* ── ☰ Menu button ─────────────────────────────────────────── */
+.menu-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--text);
-    background: var(--panel-2);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+.menu-toggle:hover { background: var(--panel-2); border-color: var(--border); }
+
+.menu-toggle .bars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.menu-toggle .bars span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--text);
+    transition: transform 0.2s, opacity 0.2s;
+}
+/* when open, the three lines turn into an ✕ */
+.menu-toggle.open .bars span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.menu-toggle.open .bars span:nth-child(2) { opacity: 0; }
+.menu-toggle.open .bars span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ── ☰ Menu panel ──────────────────────────────────────────── */
+.menu-panel {
+    position: fixed;
+    top: 72px;
+    left: 24px;
+    z-index: 30;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    animation: drop 0.15s ease-out;
+}
+.menu-panel a {
+    padding: 11px 14px;
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+}
+.menu-panel a:hover { background: var(--panel-2); }
+.menu-panel a.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+
+@keyframes drop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-.sidebar-navigation a.active {
-    color: #fff;
-    background: var(--accent-soft);
-    box-shadow: inset 0 0 0 1px rgba(79, 124, 255, 0.35);
-}
-
-.sidebar-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 10px 6px;
-}
-
+/* ── Page layout: the same on every page ───────────────────── */
 .main-content {
-    flex: 1;
-    min-width: 0;
-    padding: 36px 40px;
-    max-width: 1200px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 32px 60px;
 }
 
-.main-content h1,
-.main-content h2 {
-    margin-top: 0;
-    letter-spacing: -0.4px;
-}
+h1, h2 { margin-top: 0; letter-spacing: -0.4px; color: var(--text); }
 
-.main-content > #main > h2 {
+/* Page title */
+#main > h2,
+.page-header h2 {
     font-size: 28px;
-    margin-bottom: 6px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+/* One-line "what is this page for?" hint under every title */
+.page-hint {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 /* ── Cards ─────────────────────────────────────────────────── */
@@ -180,28 +209,22 @@ a { color: inherit; }
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    margin-top: 20px;
+    box-shadow: var(--shadow);
+    margin-top: 16px;
     padding: 24px;
 }
 
-.section h2 {
-    margin-top: 0;
-    font-size: 18px;
-    font-weight: 600;
-}
+.section h2 { font-size: 18px; font-weight: 600; margin-bottom: 14px; }
+.page-hint + .section { margin-top: 0; }
 
 /* ── Messages ──────────────────────────────────────────────── */
-.message {
-    margin: 0 0 12px;
-    font-weight: 500;
-    font-size: 15px;
-}
+.message { margin: 0 0 14px; font-size: 15px; font-weight: 500; }
 .message:empty { display: none; }
 .message.success,
 .message.error {
     display: inline-block;
     padding: 10px 16px;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 .message.success { color: var(--gain); background: var(--gain-soft); }
 .message.error   { color: var(--loss); background: var(--loss-soft); }
@@ -217,9 +240,9 @@ form .field {
 }
 
 form label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
-    color: var(--muted);
+    color: var(--text);
     margin-bottom: 6px;
 }
 
@@ -227,22 +250,19 @@ input, select {
     font: inherit;
     font-size: 15px;
     color: var(--text);
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: var(--panel);
+    border: 1px solid #cfd8e3;
+    border-radius: 10px;
     padding: 11px 13px;
     transition: border-color 0.15s, box-shadow 0.15s;
 }
-
-input::placeholder { color: #5d6882; }
-
+input::placeholder { color: #9aa6b8; }
 input:focus, select:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
 }
-
-select:disabled { opacity: 0.6; }
+select:disabled { background: var(--panel-2); }
 
 .inline-form {
     display: flex;
@@ -260,69 +280,63 @@ button {
     color: #fff;
     background: var(--accent);
     border: 1px solid var(--accent);
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 11px 20px;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.15s, transform 0.05s;
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
 }
-button:hover  { background: #3d6bf0; }
+button:hover  { background: var(--accent-dark); border-color: var(--accent-dark); }
 button:active { transform: translateY(1px); }
 
 button.secondary {
     color: var(--text);
-    background: var(--panel-2);
-    border-color: var(--border);
+    background: var(--panel);
+    border-color: #cfd8e3;
 }
-button.secondary:hover { border-color: var(--accent); }
+button.secondary:hover { background: var(--panel-2); border-color: #b8c3d1; }
 
 button.danger {
     color: var(--loss);
-    background: transparent;
-    border-color: rgba(239, 68, 68, 0.45);
+    background: var(--panel);
+    border-color: #f3b4b4;
 }
-button.danger:hover { background: var(--loss-soft); }
+button.danger:hover { background: var(--loss-soft); border-color: #f3b4b4; }
 
 td button {
     font-size: 13px;
-    padding: 6px 12px;
+    padding: 7px 12px;
     margin-right: 6px;
 }
 
 /* ── Tables ────────────────────────────────────────────────── */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 15px;
-}
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
 
 th {
     text-align: left;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.5px;
     color: var(--muted);
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--border);
+    background: var(--panel-2);
+    padding: 11px 14px;
     white-space: nowrap;
 }
+th:first-child { border-radius: 8px 0 0 8px; }
+th:last-child  { border-radius: 0 8px 8px 0; }
 
 td {
     padding: 14px;
     border-bottom: 1px solid var(--border);
+    vertical-align: middle;
 }
-
 tbody tr { transition: background 0.12s; }
-tbody tr:hover { background: var(--panel-2); }
+tbody tr:hover { background: #f8fafd; }
 tbody tr:last-child td { border-bottom: none; }
 
-/* first column (ticker / id) looks like a trading symbol */
-td:first-child {
-    font-family: var(--mono);
-    font-weight: 500;
-    color: #fff;
-}
+/* first column (ticker / date) stands out a little */
+td:first-child { font-weight: 600; }
 
 .num {
     text-align: right;
@@ -335,72 +349,192 @@ td:first-child {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
-    margin-top: 16px;
+    margin-bottom: 16px;
 }
-
 .totals div {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    box-shadow: var(--shadow);
     padding: 18px 20px;
 }
-
 .totals span {
     display: block;
     font-size: 13px;
     font-weight: 500;
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
-
 .totals strong {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
     letter-spacing: -0.5px;
     font-variant-numeric: tabular-nums;
 }
-
 /* the gain/loss <span> inside a total must not get the small label style above */
-.totals strong span {
-    display: inline;
-    font-size: inherit;
-    font-weight: inherit;
-    margin: 0;
-}
+.totals strong span { display: inline; font-size: inherit; font-weight: inherit; margin: 0; }
 .totals strong .gain { color: var(--gain); }
 .totals strong .loss { color: var(--loss); }
 
 /* ── Gain / loss ───────────────────────────────────────────── */
-.gain, .loss {
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-}
+.gain, .loss { font-weight: 600; font-variant-numeric: tabular-nums; }
 .gain { color: var(--gain); }
 .loss { color: var(--loss); }
 
-/* inside tables, show gain/loss as small coloured pills */
-td .gain, td .loss {
-    display: inline-block;
-    padding: 3px 9px;
-    border-radius: 6px;
-}
+/* in tables, gain/loss are small coloured pills */
+td .gain, td .loss { display: inline-block; padding: 3px 9px; border-radius: 6px; }
 td .gain { background: var(--gain-soft); }
 td .loss { background: var(--loss-soft); }
 
-.muted {
-    color: var(--muted);
+.muted { color: var(--muted); font-size: 14px; }
+p { line-height: 1.6; }
+
+/* ── Order ticket (Holdings → + New position) ──────────────── */
+.ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+}
+.ticket-grid .field { max-width: none; margin-bottom: 0; }
+.ticket-total {
+    padding: 8px 0;
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+.ticket-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+.text-link {
+    color: var(--accent);
     font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    margin-left: auto;
+}
+.text-link:hover { text-decoration: underline; }
+.ticker-form {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
 }
 
-p { line-height: 1.55; }
+/* ── Positions table ───────────────────────────────────────── */
+.symbol { font-weight: 700; color: var(--text); }
+.company { font-weight: 400; font-size: 13px; color: var(--muted); margin-top: 2px; }
+td.empty { font-weight: 400; color: var(--muted); text-align: center; padding: 30px; }
+td.actions { width: 60px; text-align: right; }
+tr.position-row.selected { background: var(--accent-soft); }
+
+.icon-button {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    font-size: 16px;
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid #cfd8e3;
+    border-radius: 10px;
+}
+.icon-button:hover { background: var(--panel-2); border-color: #b8c3d1; }
+
+/* the ☰ menu on each row */
+.row-menu { position: relative; display: inline-block; }
+.row-menu-list {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 5;
+    min-width: 190px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
+    animation: drop 0.12s ease-out;
+}
+.row-menu-list button {
+    text-align: left;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 0;
+}
+.row-menu-list button:hover { background: var(--panel-2); }
+.row-menu-list .danger-text { color: var(--loss); }
+
+/* ── Panel that opens under a row (view / edit / close) ─────── */
+tr.detail-row:hover { background: transparent; }
+tr.detail-row > td { padding: 0 0 14px; font-weight: 400; }
+.detail-panel {
+    padding: 18px 20px;
+    background: #fafbfd;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    animation: drop 0.15s ease-out;
+}
+.detail-panel p { margin: 0 0 4px; }
+.detail-panel button:not(.icon-button) { font-size: 14px; padding: 9px 16px; margin-right: 0; }
+.detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+.detail-header .symbol { font-size: 17px; }
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+.tile {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+.tile-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.tile strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+.tile strong .gain, .tile strong .loss { background: none; padding: 0; }
+.detail-panel .ticket-buttons { margin-top: 14px; }
+
+/* ── Home page ─────────────────────────────────────────────── */
+.hero {
+    padding: 36px 32px;
+    background: linear-gradient(135deg, #eef4ff 0%, #ffffff 70%);
+}
+.hero h2 { font-size: 30px; margin-bottom: 8px; }
+.hero p { color: var(--muted); margin: 0; font-size: 17px; }
+.tradingview-widget-container { min-height: 60px; }
 
 /* ── Smaller screens ───────────────────────────────────────── */
 @media (max-width: 800px) {
-    .layout { flex-direction: column; }
-    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
-    .sidebar-navigation { flex-direction: row; flex-wrap: wrap; position: static; padding: 10px; }
-    .sidebar-divider { display: none; }
-    .main-content { padding: 24px 16px; }
+    .topbar { padding: 0 14px; }
+    .menu-label { display: none; }
+    .logo { font-size: 16px; }
+    .main-content { padding: 22px 14px 40px; }
     .current-user { display: none; }
     table { font-size: 14px; }
+    th, td { padding: 10px 8px; }
+    .text-link { margin-left: 0; }
 }
+
+/* ── Portfolio: gain amount with % underneath ─────────────── */
+.sub-value { margin-top: 4px; font-size: 13px; }
+td .sub-value .gain, td .sub-value .loss { background: none; padding: 0; }
+.totals .total-percent { display: block; font-style: normal; font-size: 15px; margin-top: 2px; }
+.totals .total-percent span { font-size: 15px; }
+.totals .total-percent .gain,
+.totals .total-percent .loss { display: inline; margin: 0; font-weight: 600; }
+.totals .total-percent .gain { color: var(--gain); }
+.totals .total-percent .loss { color: var(--loss); }

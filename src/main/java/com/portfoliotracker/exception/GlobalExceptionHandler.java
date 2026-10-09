@@ -52,4 +52,9 @@ public class GlobalExceptionHandler {
     public ErrorResponseDto handleUnavailablePrice(PriceServiceUnavailableException ex) {
         return ErrorResponseDto.of(ex.getMessage());
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleIllegalArgument(IllegalArgumentException ex){
+        return new ErrorResponseDto(ex.getMessage(), null);
+    }
 }

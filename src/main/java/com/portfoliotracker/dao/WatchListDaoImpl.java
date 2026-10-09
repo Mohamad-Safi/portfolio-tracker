@@ -54,9 +54,13 @@ public class WatchListDaoImpl implements WatchListDao {
     public WatchListItem findWatchListItem(int userId, int stockId) {
 
         final String sql = "SELECT * FROM watchlist_item " +
-                           "WHERE userId = ? AND stockId = ?";
+                "WHERE userId = ? AND stockId = ?";
 
-        return jdbcTemplate.queryForObject(sql, new WatchListMapper(), userId, stockId);
+        //query returns a list and if the list is empty it wont throw null pointer exception.
+        //just made a tweek your code was calling queryforObject
+        List<WatchListItem> items = jdbcTemplate.query(sql, new WatchListMapper(), userId, stockId);
+        //tell the service item is not there yet
+        return items.isEmpty() ? null : items.get(0);
     }
 
     @Override
